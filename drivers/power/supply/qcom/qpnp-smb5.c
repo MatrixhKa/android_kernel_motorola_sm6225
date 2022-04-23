@@ -3292,6 +3292,8 @@ static int smb5_init_connector_type(struct smb_charger *chg)
 		schgm_flash_init(chg);
 	}
 
+	smblib_rerun_apsd_if_required(chg);
+
 	return 0;
 
 }
