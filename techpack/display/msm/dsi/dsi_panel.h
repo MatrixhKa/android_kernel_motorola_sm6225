@@ -503,6 +503,4 @@ bool dsi_panel_param_is_supported(u32 param_idx);
 int dsi_panel_set_param(struct dsi_panel *panel,
 			struct msm_param_info *param_info);
 
-void dsi_panel_reset_param(struct dsi_panel *panel);
-
 #endif /* _DSI_PANEL_H_ */
