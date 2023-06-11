@@ -620,9 +620,6 @@ static int lpm_cpuidle_enter(struct cpuidle_device *dev,
 	trace_cpu_idle_enter(idx);
 	lpm_stats_cpu_enter(idx, start_time);
 
-	if (need_resched())
-		goto exit;
-
 	success = psci_enter_sleep(cpu, idx, true);
 
 exit:
