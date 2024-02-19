@@ -124,7 +124,6 @@
 #define HUGE_BITS	1
 #define FULLNESS_BITS	4
 #define CLASS_BITS	8
-#define ISOLATED_BITS	3
 #define MAGIC_VAL_BITS	8
 
 #define MAX(a, b) ((a) >= (b) ? (a) : (b))
@@ -256,7 +255,6 @@ struct zspage {
 		unsigned int huge:HUGE_BITS;
 		unsigned int fullness:FULLNESS_BITS;
 		unsigned int class:CLASS_BITS + 1;
-		unsigned int isolated:ISOLATED_BITS;
 		unsigned int magic:MAGIC_VAL_BITS;
 	};
 	unsigned int inuse;
@@ -1812,18 +1810,6 @@ static void migrate_write_unlock(struct zspage *zspage)
 	write_unlock(&zspage->lock);
 }
 
-/* Number of isolated subpage for *page migration* in this zspage */
-static void inc_zspage_isolation(struct zspage *zspage)
-{
-	zspage->isolated++;
-}
-
-static void dec_zspage_isolation(struct zspage *zspage)
-{
-	VM_BUG_ON(zspage->isolated == 0);
-	zspage->isolated--;
-}
-
 static void replace_sub_page(struct size_class *class, struct zspage *zspage,
 				struct page *newpage, struct page *oldpage)
 {
@@ -1849,21 +1835,11 @@ static void replace_sub_page(struct size_class *class, struct zspage *zspage,
 
 static bool zs_page_isolate(struct page *page, isolate_mode_t mode)
 {
-	struct zspage *zspage;
-	struct address_space *mapping;
-
 	/*
 	 * Page is locked so zspage couldn't be destroyed. For detail, look at
 	 * lock_zspage in free_zspage.
 	 */
 	VM_BUG_ON_PAGE(PageIsolated(page), page);
-
-	zspage = get_zspage(page);
-	mapping = page_mapping(page);
-	pool = mapping->private_data;
-	spin_lock(&pool->lock);
-	inc_zspage_isolation(zspage);
-	migrate_write_unlock(zspage);
 
 	return true;
 }
@@ -1950,18 +1926,7 @@ static int zs_page_migrate(struct address_space *mapping, struct page *newpage,
 
 static void zs_page_putback(struct page *page)
 {
-	struct zs_pool *pool;
-	struct address_space *mapping;
-	struct zspage *zspage;
-
 	VM_BUG_ON_PAGE(!PageIsolated(page), page);
-
-	zspage = get_zspage(page);
-	mapping = page_mapping(page);
-	pool = mapping->private_data;
-	spin_lock(&pool->lock);
-	dec_zspage_isolation(zspage);
-	migrate_write_unlock(zspage);
 }
 
 static const struct address_space_operations zsmalloc_aops = {
