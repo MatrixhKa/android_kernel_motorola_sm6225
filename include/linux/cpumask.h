@@ -193,6 +193,16 @@ static inline unsigned int cpumask_local_spread(unsigned int i, int node)
 #define for_each_cpu_and(cpu, mask, and)	\
 	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask, (void)and)
 #else
+
+static inline
+unsigned int cpumask_first_and_and(const struct cpumask *srcp1,
+				   const struct cpumask *srcp2,
+				   const struct cpumask *srcp3)
+{
+	return find_first_and_and_bit(cpumask_bits(srcp1), cpumask_bits(srcp2),
+				      cpumask_bits(srcp3), nr_cpumask_bits);
+}
+
 /**
  * cpumask_first - get the first cpu in a cpumask
  * @srcp: the cpumask pointer
