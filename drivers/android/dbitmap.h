@@ -132,12 +132,11 @@ dbitmap_grow(struct dbitmap *dmap, unsigned long *new, unsigned int nbits)
  * is returned to indicate that a dbitmap_grow() is needed.
  */
 static inline int
-dbitmap_acquire_next_zero_bit(struct dbitmap *dmap, unsigned long offset,
-			      unsigned long *bit)
+dbitmap_acquire_first_zero_bit(struct dbitmap *dmap, unsigned long *bit)
 {
 	unsigned long n;
 
-	n = find_next_zero_bit(dmap->map, dmap->nbits, offset);
+	n = find_first_zero_bit(dmap->map, dmap->nbits);
 	if (n == dmap->nbits)
 		return -ENOSPC;
 
@@ -162,6 +161,8 @@ static inline int dbitmap_init(struct dbitmap *dmap)
 	}
 
 	dmap->nbits = NBITS_MIN;
+	/* BIT(0) is reserved for the context manager */
+	set_bit(0, dmap->map);
 
 	return 0;
 }
