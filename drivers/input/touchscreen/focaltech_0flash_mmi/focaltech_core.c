@@ -1758,51 +1758,6 @@ static int drm_check_dt(struct device_node *np)
     return -ENODEV;
 }
 
-static int fts_ts_check_default_tp(struct device_node *dt, const char *prop)
-{
-    const char **active_tp = NULL;
-    int count, tmp, score = 0;
-    const char *active;
-    int ret, i;
-
-    count = of_property_count_strings(dt->parent, prop);
-    if (count <= 0 || count > 3)
-        return -ENODEV;
-
-    active_tp = kcalloc(count, sizeof(char *),  GFP_KERNEL);
-    if (!active_tp) {
-        FTS_ERROR("FTS alloc failed\n");
-        return -ENOMEM;
-    }
-
-    ret = of_property_read_string_array(dt->parent, prop,
-            active_tp, count);
-    if (ret < 0) {
-        FTS_ERROR("fail to read %s %d\n", prop, ret);
-        ret = -ENODEV;
-        goto out;
-    }
-
-    for (i = 0; i < count; i++) {
-        active = active_tp[i];
-        if (active != NULL) {
-            tmp = of_device_is_compatible(dt, active);
-            if (tmp > 0)
-                score++;
-        }
-    }
-
-    if (score <= 0) {
-        FTS_ERROR("not match this driver\n");
-        ret = -ENODEV;
-        goto out;
-    }
-    ret = 0;
-out:
-    kfree(active_tp);
-    return ret;
-}
-
 int drm_notifier_callback(struct notifier_block *self, unsigned long event, void *data)
 {
 	struct drm_panel_notifier *evdata = data;
@@ -2052,12 +2007,9 @@ static int fts_ts_probe_entry(struct fts_ts_data *ts_data)
             FTS_ERROR("device-tree parse fail");
 #if FTS_CONFIG_DRM_PANEL
 	if (drm_check_dt(dp)) {
-		FTS_ERROR("parse drm-panel fail");
-		if (!fts_ts_check_default_tp(dp, "qcom,spi-touch-active"))
-			ret = -EPROBE_DEFER;
-		else
-			ret = -ENODEV;
-		return ret;
+		FTS_ERROR("DRM panel not available yet, deferring probe.");
+		/* If the panel is not ready, defer the probe and let the kernel retry later. */
+		return -EPROBE_DEFER;
 	}
 #endif
     } else {
