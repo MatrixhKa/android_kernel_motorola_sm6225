@@ -69,5 +69,6 @@ struct aw_bin {
 };
 
 extern int aw_parsing_bin_file(struct aw_bin *bin);
+int aw9_parse_bin_header_1_0_0(struct aw_bin *bin);
 int aw_parse_bin_header_1_0_0(struct aw_bin *bin);
 #endif
