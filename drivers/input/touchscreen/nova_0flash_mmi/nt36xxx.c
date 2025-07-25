@@ -3003,8 +3003,9 @@ static int32_t nvt_ts_probe(struct spi_device *client)
 
 	ret = nova_check_dt(dp);
 	if (ret) {
-		NVT_LOG("panel error\n");
-		return ret;
+		NVT_ERR("DRM panel not available yet, deferring probe.");
+		/* If the panel is not ready, defer the probe and let the kernel retry later. */
+		return -EPROBE_DEFER;
 	}
 #endif
 #else
