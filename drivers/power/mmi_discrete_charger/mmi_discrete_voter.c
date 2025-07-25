@@ -173,19 +173,19 @@ static char *get_client_str(struct votable *votable, int client_id)
 	return votable->client_strs[client_id];
 }
 
-void lock_votable(struct votable *votable)
+void mmi_lock_votable(struct votable *votable)
 {
 	mutex_lock(&votable->vote_lock);
 }
 
-void unlock_votable(struct votable *votable)
+void mmi_unlock_votable(struct votable *votable)
 {
 	mutex_unlock(&votable->vote_lock);
 }
 
 /**
- * is_override_vote_enabled() -
- * is_override_vote_enabled_locked() -
+ * mmi_is_override_vote_enabled() -
+ * mmi_is_override_vote_enabled_locked() -
  *		The unlocked and locked variants of getting whether override
 		vote is enabled.
  * @votable:	the votable object
@@ -193,7 +193,7 @@ void unlock_votable(struct votable *votable)
  * Returns:
  *	True if the client's vote is enabled; false otherwise.
  */
-bool is_override_vote_enabled_locked(struct votable *votable)
+bool mmi_is_override_vote_enabled_locked(struct votable *votable)
 {
 	if (!votable)
 		return false;
@@ -201,23 +201,23 @@ bool is_override_vote_enabled_locked(struct votable *votable)
 	return votable->override_result != -EINVAL;
 }
 
-bool is_override_vote_enabled(struct votable *votable)
+bool mmi_is_override_vote_enabled(struct votable *votable)
 {
 	bool enable;
 
 	if (!votable)
 		return false;
 
-	lock_votable(votable);
-	enable = is_override_vote_enabled_locked(votable);
-	unlock_votable(votable);
+	mmi_lock_votable(votable);
+	enable = mmi_is_override_vote_enabled_locked(votable);
+	mmi_unlock_votable(votable);
 
 	return enable;
 }
 
 /**
- * is_client_vote_enabled() -
- * is_client_vote_enabled_locked() -
+ * mmi_is_client_vote_enabled() -
+ * mmi_is_client_vote_enabled_locked() -
  *		The unlocked and locked variants of getting whether a client's
 		vote is enabled.
  * @votable:	the votable object
@@ -226,7 +226,7 @@ bool is_override_vote_enabled(struct votable *votable)
  * Returns:
  *	True if the client's vote is enabled; false otherwise.
  */
-bool is_client_vote_enabled_locked(struct votable *votable,
+bool mmi_is_client_vote_enabled_locked(struct votable *votable,
 							const char *client_str)
 {
 
@@ -242,22 +242,22 @@ bool is_client_vote_enabled_locked(struct votable *votable,
 	return votable->votes[client_id].enabled;
 }
 
-bool is_client_vote_enabled(struct votable *votable, const char *client_str)
+bool mmi_is_client_vote_enabled(struct votable *votable, const char *client_str)
 {
 	bool enabled;
 
 	if (!votable || !client_str)
 		return false;
 
-	lock_votable(votable);
-	enabled = is_client_vote_enabled_locked(votable, client_str);
-	unlock_votable(votable);
+	mmi_lock_votable(votable);
+	enabled = mmi_is_client_vote_enabled_locked(votable, client_str);
+	mmi_unlock_votable(votable);
 	return enabled;
 }
 
 /**
- * get_client_vote() -
- * get_client_vote_locked() -
+ * mmi_get_client_vote() -
+ * mmi_get_client_vote_locked() -
  *		The unlocked and locked variants of getting a client's voted
  *		value.
  * @votable:	the votable object
@@ -267,7 +267,7 @@ bool is_client_vote_enabled(struct votable *votable, const char *client_str)
  *	The value the client voted for. -EINVAL is returned if the client
  *	is not enabled or the client is not found.
  */
-int get_client_vote_locked(struct votable *votable, const char *client_str)
+int mmi_get_client_vote_locked(struct votable *votable, const char *client_str)
 {
 	int client_id;
 
@@ -285,22 +285,22 @@ int get_client_vote_locked(struct votable *votable, const char *client_str)
 	return votable->votes[client_id].value;
 }
 
-int get_client_vote(struct votable *votable, const char *client_str)
+int mmi_get_client_vote(struct votable *votable, const char *client_str)
 {
 	int value;
 
 	if (!votable || !client_str)
 		return -EINVAL;
 
-	lock_votable(votable);
-	value = get_client_vote_locked(votable, client_str);
-	unlock_votable(votable);
+	mmi_lock_votable(votable);
+	value = mmi_get_client_vote_locked(votable, client_str);
+	mmi_unlock_votable(votable);
 	return value;
 }
 
 /**
- * get_effective_result() -
- * get_effective_result_locked() -
+ * mmi_get_effective_result() -
+ * mmi_get_effective_result_locked() -
  *		The unlocked and locked variants of getting the effective value
  *		amongst all the enabled voters.
  *
@@ -315,7 +315,7 @@ int get_client_vote(struct votable *votable, const char *client_str)
  *	because for SET_ANY there is no concept of abstaining from election. The
  *	votes for all the clients of SET_ANY votable is defaulted to false.
  */
-int get_effective_result_locked(struct votable *votable)
+int mmi_get_effective_result_locked(struct votable *votable)
 {
 	if (!votable)
 		return -EINVAL;
@@ -329,22 +329,22 @@ int get_effective_result_locked(struct votable *votable)
 	return votable->effective_result;
 }
 
-int get_effective_result(struct votable *votable)
+int mmi_get_effective_result(struct votable *votable)
 {
 	int value;
 
 	if (!votable)
 		return -EINVAL;
 
-	lock_votable(votable);
+	mmi_lock_votable(votable);
 	value = get_effective_result_locked(votable);
-	unlock_votable(votable);
+	mmi_unlock_votable(votable);
 	return value;
 }
 
 /**
- * get_effective_client() -
- * get_effective_client_locked() -
+ * mmi_get_effective_client() -
+ * mmi_get_effective_client_locked() -
  *		The unlocked and locked variants of getting the effective client
  *		amongst all the enabled voters.
  *
@@ -360,7 +360,7 @@ int get_effective_result(struct votable *votable)
  *	from election, the only client that casts a vote or the client that
  *	caused the result to change is returned.
  */
-const char *get_effective_client_locked(struct votable *votable)
+const char *mmi_get_effective_client_locked(struct votable *votable)
 {
 	if (!votable)
 		return NULL;
@@ -374,21 +374,21 @@ const char *get_effective_client_locked(struct votable *votable)
 	return get_client_str(votable, votable->effective_client_id);
 }
 
-const char *get_effective_client(struct votable *votable)
+const char *mmi_get_effective_client(struct votable *votable)
 {
 	const char *client_str;
 
 	if (!votable)
 		return NULL;
 
-	lock_votable(votable);
-	client_str = get_effective_client_locked(votable);
-	unlock_votable(votable);
+	mmi_lock_votable(votable);
+	client_str = mmi_get_effective_client_locked(votable);
+	mmi_unlock_votable(votable);
 	return client_str;
 }
 
 /**
- * vote() -
+ * mmi_vote() -
  *
  * @votable:	the votable object
  * @client_str: the voting client
@@ -410,7 +410,7 @@ const char *get_effective_client(struct votable *votable)
  *	The return from the callback when present and needs to be called
  *	or zero.
  */
-int vote(struct votable *votable, const char *client_str, bool enabled, int val)
+int mmi_vote(struct votable *votable, const char *client_str, bool enabled, int val)
 {
 	int effective_id = -EINVAL;
 	int effective_result;
@@ -421,7 +421,7 @@ int vote(struct votable *votable, const char *client_str, bool enabled, int val)
 	if (!votable || !client_str)
 		return -EINVAL;
 
-	lock_votable(votable);
+	mmi_lock_votable(votable);
 
 	client_id = get_client_id(votable, client_str);
 	if (client_id < 0) {
@@ -496,12 +496,12 @@ int vote(struct votable *votable, const char *client_str, bool enabled, int val)
 
 	votable->voted_on = true;
 out:
-	unlock_votable(votable);
+	mmi_unlock_votable(votable);
 	return rc;
 }
 
 /**
- * vote_override() -
+ * mmi_vote_override() -
  *
  * @votable:		The votable object
  * @override_client:	The voting client that will override other client's
@@ -521,7 +521,7 @@ out:
  *	The result of vote. 0 is returned if the vote
  *	is successfully set by the overriding client, when enabled is set.
  */
-int vote_override(struct votable *votable, const char *override_client,
+int mmi_vote_override(struct votable *votable, const char *override_client,
 		  bool enabled, int val)
 {
 	int rc = 0;
@@ -529,7 +529,7 @@ int vote_override(struct votable *votable, const char *override_client,
 	if (!votable || !override_client)
 		return -EINVAL;
 
-	lock_votable(votable);
+	mmi_lock_votable(votable);
 	if (votable->force_active) {
 		votable->override_result = enabled ? val : -EINVAL;
 		goto out;
@@ -550,11 +550,11 @@ int vote_override(struct votable *votable, const char *override_client,
 	}
 
 out:
-	unlock_votable(votable);
+	mmi_unlock_votable(votable);
 	return rc;
 }
 
-int rerun_election(struct votable *votable)
+int mmi_rerun_election(struct votable *votable)
 {
 	int rc = 0;
 	int effective_result;
@@ -562,18 +562,18 @@ int rerun_election(struct votable *votable)
 	if (!votable)
 		return -EINVAL;
 
-	lock_votable(votable);
-	effective_result = get_effective_result_locked(votable);
+	mmi_lock_votable(votable);
+	effective_result = mmi_get_effective_result_locked(votable);
 	if (votable->callback)
 		rc = votable->callback(votable,
 			votable->data,
 			effective_result,
 			get_client_str(votable, votable->effective_client_id));
-	unlock_votable(votable);
+	mmi_unlock_votable(votable);
 	return rc;
 }
 
-struct votable *find_votable(const char *name)
+struct votable *mmi_find_votable(const char *name)
 {
 	unsigned long flags;
 	struct votable *v;
@@ -617,7 +617,7 @@ static int force_active_set(void *data, u64 val)
 	int effective_result;
 	const char *client;
 
-	lock_votable(votable);
+	mmi_lock_votable(votable);
 	votable->force_active = !!val;
 
 	if (!votable->callback)
@@ -640,13 +640,13 @@ static int force_active_set(void *data, u64 val)
 					client);
 	}
 out:
-	unlock_votable(votable);
+	mmi_unlock_votable(votable);
 	return rc;
 }
 DEFINE_DEBUGFS_ATTRIBUTE(votable_force_ops, force_active_get, force_active_set,
 		"%lld\n");
 
-int pmic_vote_force_val_set(struct votable *votable, u32 val) {
+int mmi_pmic_vote_force_val_set(struct votable *votable, u32 val) {
 	if(votable) {
 		votable->force_val = val;
 		return 0;
@@ -655,14 +655,14 @@ int pmic_vote_force_val_set(struct votable *votable, u32 val) {
 	return -EINVAL;
 }
 
-int pmic_vote_force_active_get(struct votable *votable, u64 *val) {
+int mmi_pmic_vote_force_active_get(struct votable *votable, u64 *val) {
 	if(votable)
 		return force_active_get(votable, val);
 
 	return -EINVAL;
 }
 
-int pmic_vote_force_active_set(struct votable *votable, u64 val) {
+int mmi_pmic_vote_force_active_set(struct votable *votable, u64 val) {
 	if(votable)
 		return force_active_set(votable, val);
 
@@ -676,7 +676,7 @@ static int show_votable_clients(struct seq_file *m, void *data)
 	char *type_str = "Unkonwn";
 	const char *effective_client_str;
 
-	lock_votable(votable);
+	mmi_lock_votable(votable);
 
 	for (i = 0; i < votable->num_clients; i++) {
 		if (votable->client_strs[i]) {
@@ -700,13 +700,13 @@ static int show_votable_clients(struct seq_file *m, void *data)
 		break;
 	}
 
-	effective_client_str = get_effective_client_locked(votable);
+	effective_client_str = mmi_get_effective_client_locked(votable);
 	seq_printf(m, "%s: effective=%s type=%s v=%d\n",
 			votable->name,
 			effective_client_str ? effective_client_str : "none",
 			type_str,
-			get_effective_result_locked(votable));
-	unlock_votable(votable);
+			mmi_get_effective_result_locked(votable));
+	mmi_unlock_votable(votable);
 
 	return 0;
 }
@@ -726,7 +726,7 @@ static const struct file_operations votable_status_ops = {
 	.release	= single_release,
 };
 
-struct votable *create_votable(const char *name,
+struct votable *mmi_create_votable(const char *name,
 				int votable_type,
 				int (*callback)(struct votable *votable,
 					void *data,
@@ -740,7 +740,7 @@ struct votable *create_votable(const char *name,
 	if (!name)
 		return ERR_PTR(-EINVAL);
 
-	votable = find_votable(name);
+	votable = mmi_find_votable(name);
 	if (votable)
 		return ERR_PTR(-EEXIST);
 
@@ -834,7 +834,7 @@ struct votable *create_votable(const char *name,
 	return votable;
 }
 
-void destroy_votable(struct votable *votable)
+void mmi_destroy_votable(struct votable *votable)
 {
 	unsigned long flags;
 	int i;
