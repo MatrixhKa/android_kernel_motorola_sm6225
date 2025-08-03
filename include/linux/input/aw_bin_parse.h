@@ -68,7 +68,7 @@ struct aw_bin {
 	struct bin_container info; /* Obtained bin file data that needs to be parsed */
 };
 
-extern int aw_parsing_bin_file(struct aw_bin *bin);
+extern int aw9_parsing_bin_file(struct aw_bin *bin);
 int aw9_parse_bin_header_1_0_0(struct aw_bin *bin);
 int aw_parse_bin_header_1_0_0(struct aw_bin *bin);
 #endif
