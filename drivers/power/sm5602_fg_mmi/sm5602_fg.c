@@ -452,7 +452,7 @@ static unsigned int fg_read_ocv(struct sm_fg_chip *sm)
 	return ocv; //mV
 }
 
-bool is_factory_mode(void)
+static bool is_factory_mode(void)
 {
 	struct device_node *np = of_find_node_by_path("/chosen");
 	bool factory_mode = false;
