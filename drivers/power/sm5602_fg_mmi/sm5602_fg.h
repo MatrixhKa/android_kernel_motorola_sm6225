@@ -61,4 +61,4 @@
 #define INIT_CHECK_MASK         	0x0010
 #define DISABLE_RE_INIT         	0x0010
 
-#endif /* SM5602_FG_H */
+#endif /* SM5602_FG_H */
