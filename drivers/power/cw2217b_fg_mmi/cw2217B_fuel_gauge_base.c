@@ -533,7 +533,7 @@ static int cw_get_capacity(struct cw_battery *cw_bat)
 	return 0;
 }
 
-bool is_factory_mode(void)
+static bool is_factory_mode(void)
 {
 	struct device_node *np = of_find_node_by_path("/chosen");
 	bool factory_mode = false;

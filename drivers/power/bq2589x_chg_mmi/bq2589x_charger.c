@@ -2093,7 +2093,7 @@ static int bq2589x_detected_qc3p_hvdcp(struct bq2589x *bq, int *charger_type)
 #endif
 
 #ifdef CONFIG_MMI_QC3P_WT6670_DETECTED
-bool is_chan_valid(struct bq2589x *chip,
+static bool is_chan_valid(struct bq2589x *chip,
 		enum mmi_qc3p_ext_iio_channels chan)
 {
 	int rc;
@@ -2118,7 +2118,7 @@ bool is_chan_valid(struct bq2589x *chip,
 	return true;
 }
 
-int mmi_charger_read_iio_chan(struct bq2589x *chip,
+static int mmi_charger_read_iio_chan(struct bq2589x *chip,
 	enum mmi_qc3p_ext_iio_channels chan, int *val)
 {
 	int rc;
@@ -2132,7 +2132,7 @@ int mmi_charger_read_iio_chan(struct bq2589x *chip,
 	return -EINVAL;
 }
 
-int mmi_charger_write_iio_chan(struct bq2589x *chip,
+static int mmi_charger_write_iio_chan(struct bq2589x *chip,
 	enum mmi_qc3p_ext_iio_channels chan, int val)
 {
 	if (is_chan_valid(chip, chan))
@@ -2155,7 +2155,7 @@ static int mmi_init_iio_psy(struct bq2589x *chip,
 	return 0;
 }
 
-int qc3p_start_detection(struct bq2589x *chip)
+static int qc3p_start_detection(struct bq2589x *chip)
 {
 	int ret = 0;
 	ret = mmi_charger_write_iio_chan(chip, SMB5_QC3P_START_DETECT, true);
@@ -2166,7 +2166,7 @@ int qc3p_start_detection(struct bq2589x *chip)
 	return 0;
 }
 
-bool qc3p_detection_done(struct bq2589x *chip)
+static bool qc3p_detection_done(struct bq2589x *chip)
 {
 	int ret = 0;
 	int val = 0;
@@ -2187,7 +2187,7 @@ bool qc3p_detection_done(struct bq2589x *chip)
 	return val;
 }
 
-int qc3p_read_charger_type(struct bq2589x *chip)
+static int qc3p_read_charger_type(struct bq2589x *chip)
 {
 	int ret = 0;
 	int val = 0;
@@ -2200,7 +2200,7 @@ int qc3p_read_charger_type(struct bq2589x *chip)
 	return val;
 }
 
-bool qc3p_update_policy(struct bq2589x *chip )
+static bool qc3p_update_policy(struct bq2589x *chip )
 {
 	int ret = 0;
 	int val = 0;
