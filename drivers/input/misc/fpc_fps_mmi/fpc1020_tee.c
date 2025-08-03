@@ -34,7 +34,7 @@ struct FPS_data {
 	struct blocking_notifier_head nhead;
 } *fpsData;
 
-struct FPS_data *FPS_init(struct device *dev)
+static struct FPS_data *FPS_init(struct device *dev)
 {
 	struct FPS_data *mdata = devm_kzalloc(dev,
 			sizeof(struct FPS_data), GFP_KERNEL);
@@ -45,7 +45,7 @@ struct FPS_data *FPS_init(struct device *dev)
 	return mdata;
 }
 
-int FPS_register_notifier(struct notifier_block *nb,
+static int FPS_register_notifier(struct notifier_block *nb,
 	unsigned long stype, bool report)
 {
 	int error;
@@ -69,7 +69,7 @@ int FPS_register_notifier(struct notifier_block *nb,
 }
 EXPORT_SYMBOL_GPL(FPS_register_notifier);
 
-int FPS_unregister_notifier(struct notifier_block *nb,
+static int FPS_unregister_notifier(struct notifier_block *nb,
 		unsigned long stype)
 {
 	int error;
@@ -90,7 +90,7 @@ int FPS_unregister_notifier(struct notifier_block *nb,
 }
 EXPORT_SYMBOL_GPL(FPS_unregister_notifier);
 
-void FPS_notify(unsigned long stype, int state)
+static void FPS_notify(unsigned long stype, int state)
 {
 	struct FPS_data *mdata = fpsData;
 
