@@ -717,7 +717,7 @@ aw9610x_cfg_all_loaded(const struct firmware *cont, void *context)
 	}
 	aw_bin->info.len = cont->size;
 	memcpy(aw_bin->info.data, cont->data, cont->size);
-	ret = aw_parsing_bin_file(aw_bin);
+	ret = aw9_parsing_bin_file(aw_bin);
 	if (ret < 0) {
 		LOG_ERR("[:aw9610x parse bin fail! ret = %d", ret);
 		kfree(aw_bin);
