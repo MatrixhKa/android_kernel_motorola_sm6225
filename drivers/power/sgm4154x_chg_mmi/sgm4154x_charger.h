@@ -462,6 +462,5 @@ static const char * const mmi_qc3p_ext_iio_chan_name[] = {
 	[SMB5_READ_USBIN_VOLTAGE] = "read_usbin_voltage",
         [SMB5_READ_BC12_CHG_TYPE] = "wt6670_bc12_chg_type",
 };
-bool qc3p_update_policy(struct sgm4154x_device *chip);
 #endif
 #endif /* _SGM4154x_CHARGER_H */

@@ -2074,7 +2074,7 @@ static int mm8xxx_battery_parse_dts(struct mm8xxx_device_info *di)
 	return rc;
 }
 
-bool is_factory_mode(void)
+static bool is_factory_mode(void)
 {
 	struct device_node *np = of_find_node_by_path("/chosen");
 	bool factory_mode = false;
