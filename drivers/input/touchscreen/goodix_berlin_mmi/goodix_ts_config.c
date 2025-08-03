@@ -12,7 +12,7 @@
  */
 #include "goodix_ts_config.h"
 
-struct goodix_ic_report_rate_config report_rate_config_info = {
+static struct goodix_ic_report_rate_config report_rate_config_info = {
 #if defined(PRODUCT_LI) || defined(PRODUCT_ONELI) || defined(PRODUCT_TUNDRA) \
 	||defined(PRODUCT_EQS) || defined(PRODUCT_RTWO) || defined(PRODUCT_BRONCO) \
 	|| defined(PRODUCT_ZEEKR) || defined(PRODUCT_LYNKCO) || defined(PRODUCT_BANGKK) \
