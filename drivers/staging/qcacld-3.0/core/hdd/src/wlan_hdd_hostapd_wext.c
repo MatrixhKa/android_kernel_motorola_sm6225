@@ -345,7 +345,6 @@ static __iw_softap_setparam(struct net_device *dev,
 	mac_handle_t mac_handle;
         //BEGIN MOT a19110 IKDREL3KK-11113 Fix iwpriv panic
         int *value;
-	uint8_t *mot_value; //MOT a19110 IKLOCSEN-3014 Use copy from user
         int sub_cmd;
         int set_value;
         int *tmp = (int *) extra;
@@ -357,24 +356,15 @@ static __iw_softap_setparam(struct net_device *dev,
 
 	hdd_enter_dev(dev);
         //BEGIN MOT a19110 IKDREL3KK-11113 Fix iwpriv panic to 8998
-        //BEGIN MOT a19110 IKLOCSEN-3014 use copy_from_user to avoid junk value
-	if (tmp[0] < 0 || tmp[0] > QCSAP_SET_BTCOEX_LOW_RSSI_THRESHOLD) {
-            mot_value = (uint8_t *)kmalloc(wrqu->data.length+1, GFP_KERNEL);
-	    if(copy_from_user((uint8_t *) mot_value, (uint8_t *)(wrqu->data.pointer), wrqu->data.length)) {
-	        hdd_err("%s -- copy_from_user --data pointer failed! bailing",
-	                    __func__);
-		    kfree(mot_value);
-                    return -EFAULT;
-	    }
-	    sub_cmd = (int )(*(mot_value + 0));
-	    set_value = (int )(*(mot_value + 1));
-	    kfree(mot_value);
+        if (tmp[0] < 0 || tmp[0] > QCASAP_SET_PHYMODE) {
+               value = (int *)(wrqu->data.pointer);
         } else {
                value = (int *)extra;
-	       sub_cmd = value[0];
-	       set_value = value[1];
         }
-        //END IKLOCSEN-3014
+
+        sub_cmd = value[0];
+        set_value = value[1];
+
         if (!adapter || !adapter->hdd_ctx) {
                hdd_err("Either hostpad adapter is null or Hal ctx is null");
                return -EINVAL;
@@ -1426,7 +1416,7 @@ int __iw_softap_modify_acl(struct net_device *dev,
 			   union iwreq_data *wrqu, char *extra)
 {
 	struct hdd_adapter *adapter = (netdev_priv(dev));
-	uint8_t *value = (uint8_t *) kmalloc(wrqu->data.length+1, GFP_KERNEL); //MOT IKLOCSEN-3014
+	uint8_t *value = (uint8_t *)(wrqu->data.pointer);
 	uint8_t peer_mac[QDF_MAC_ADDR_SIZE];
 	int list_type, cmd, i;
 	int ret;
@@ -1437,18 +1427,8 @@ int __iw_softap_modify_acl(struct net_device *dev,
 
 	hdd_ctx = WLAN_HDD_GET_CTX(adapter);
 	ret = wlan_hdd_validate_context(hdd_ctx);
-	if (0 != ret) {
-	    kfree(value); //MOT IKLOCSEN-3014
-	    return ret;
-	}
-	//BEGIN MOT a19110 IKLOCSEN-3014 use copy_from_user to avoid junk value
-	if(copy_from_user((uint8_t *) value, (uint8_t *)(wrqu->data.pointer), wrqu->data.length)) {
-	    hdd_err("%s -- copy_from_user --data pointer failed! bailing",
-	                       __func__);
-	    kfree(value);
-	    return -EFAULT;
-	}
-        //END IKLOCSEN-3014
+	if (0 != ret)
+		return ret;
 
 	ret = hdd_check_private_wext_control(hdd_ctx, info);
 	if (0 != ret)
@@ -1461,7 +1441,6 @@ int __iw_softap_modify_acl(struct net_device *dev,
 	i++;
 	cmd = (int)(*(value + i));
 
-        kfree(value);//MOT IKLOCSEN-3014
 	hdd_debug("Modify ACL mac:" QDF_MAC_ADDR_FMT " type: %d cmd: %d",
 	       QDF_MAC_ADDR_REF(peer_mac), list_type, cmd);
 
@@ -1553,23 +1532,17 @@ static __iw_softap_set_max_tx_power(struct net_device *dev,
 {
 	struct hdd_adapter *adapter = (netdev_priv(dev));
 	struct hdd_context *hdd_ctx;
-	uint8_t *mot_value;
+	int *value = (int *)(wrqu->data.pointer);
 	int set_value;
 	int ret;
 	struct qdf_mac_addr bssid = QDF_MAC_ADDR_BCAST_INIT;
 	struct qdf_mac_addr selfMac = QDF_MAC_ADDR_BCAST_INIT;
 
 	hdd_enter_dev(dev);
-        mot_value = (uint8_t*)kmalloc(wrqu->data.length+1, GFP_KERNEL);
-	if (NULL == mot_value)
+
+	if (!value)
 		return -ENOMEM;
-        if(copy_from_user((uint8_t *)mot_value, (uint8_t *)(wrqu->data.pointer), wrqu->data.length)) {
-            hdd_err("%s -- copy from user -- data pointer failed! bailing", __func__);
-            kfree(mot_value);
-            return -EFAULT;
-        }
-        set_value = (int)(*(mot_value + 0));
-        kfree(mot_value);
+
 	hdd_ctx = WLAN_HDD_GET_CTX(adapter);
 	ret = wlan_hdd_validate_context(hdd_ctx);
 	if (0 != ret)
@@ -1583,7 +1556,8 @@ static __iw_softap_set_max_tx_power(struct net_device *dev,
 	qdf_copy_macaddr(&bssid, &adapter->mac_addr);
 	qdf_copy_macaddr(&selfMac, &adapter->mac_addr);
 
-        if (QDF_STATUS_SUCCESS !=
+	set_value = value[0];
+	if (QDF_STATUS_SUCCESS !=
 	    sme_set_max_tx_power(hdd_ctx->mac_handle, bssid,
 				 selfMac, set_value)) {
 		hdd_err("Setting maximum tx power failed");
@@ -1838,7 +1812,7 @@ static __iw_softap_disassoc_sta(struct net_device *dev,
 {
 	struct hdd_adapter *adapter = (netdev_priv(dev));
 	struct hdd_context *hdd_ctx;
-	uint8_t *peer_macaddr = (uint8_t *)kmalloc(wrqu->data.length+1, GFP_KERNEL); //MOT IKLOCSEN-3014
+	uint8_t *peer_macaddr;
 	int ret;
 	struct csr_del_sta_params del_sta_params;
 
@@ -1846,33 +1820,22 @@ static __iw_softap_disassoc_sta(struct net_device *dev,
 
 	if (!capable(CAP_NET_ADMIN)) {
 		hdd_err("permission check failed");
-		kfree(peer_macaddr); //MOT IKLOCSEN-3014
 		return -EPERM;
 	}
 
 	hdd_ctx = WLAN_HDD_GET_CTX(adapter);
 	ret = wlan_hdd_validate_context(hdd_ctx);
-	if (0 != ret){
-		kfree(peer_macaddr); //MOT IKLOCSEN-3014
+	if (0 != ret)
 		return ret;
-        }
+
 	ret = hdd_check_private_wext_control(hdd_ctx, info);
-	if (0 != ret){
-		kfree(peer_macaddr); //MOT IKLOCSEN-3014
+	if (0 != ret)
 		return ret;
-	}
 
 	/* iwpriv tool or framework calls this ioctl with
 	 * data passed in extra (less than 16 octets);
 	 */
-       //BEGIN MOT a19110 IKLOCSEN-3014 use copy_from_user to avoid junk value
-       if(copy_from_user((uint8_t *) peer_macaddr, (uint8_t *)(wrqu->data.pointer), wrqu->data.length)) {
-               hdd_err("%s -- copy_from_user --data pointer failed! bailing",
-                         __func__);
-               kfree(peer_macaddr);
-               return -EFAULT;
-       }
-       //END IKLOCSEN-3014
+	peer_macaddr = (uint8_t *) (wrqu->data.pointer);
 
 	hdd_debug("data " QDF_MAC_ADDR_FMT,
 		  QDF_MAC_ADDR_REF(peer_macaddr));
@@ -1881,7 +1844,7 @@ static __iw_softap_disassoc_sta(struct net_device *dev,
 					SIR_MAC_MGMT_DISASSOC,
 					&del_sta_params);
 	hdd_softap_sta_disassoc(adapter, &del_sta_params);
-        kfree(peer_macaddr); //MOT IKLOCSEN-3014
+
 	hdd_exit();
 	return 0;
 }
