@@ -3,7 +3,7 @@
 # Makefile for the linux exFAT filesystem support.
 #
 ifneq ($(KERNELRELEASE),)
-obj-y += exfat.o
+obj-$(CONFIG_EXFAT_FS) += exfat.o
 
 exfat-y	:= inode.o namei.o dir.o super.o fatent.o cache.o nls.o misc.o \
 	   file.o balloc.o
@@ -15,7 +15,7 @@ KDIR	?= /lib/modules/${KERNELRELEASE}/build
 MDIR	?= /lib/modules/${KERNELRELEASE}
 PWD	:= $(shell pwd)
 
-export CONFIG_EXFAT_FS := y
+export CONFIG_EXFAT_FS := m
 
 all:
 	$(MAKE) -C $(KDIR) M=$(PWD) modules
