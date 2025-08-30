@@ -120,7 +120,7 @@ static struct FPS_data *FPS_init(void)
 	}
 	return fpsData;
 }
-static int FPS_register_notifier(struct notifier_block *nb,
+static inline int FPS_register_notifier(struct notifier_block *nb,
 	unsigned long stype, bool report)
 {
 	int error;
@@ -144,7 +144,7 @@ static int FPS_register_notifier(struct notifier_block *nb,
 }
 EXPORT_SYMBOL_GPL(FPS_register_notifier);
 
-static int FPS_unregister_notifier(struct notifier_block *nb,
+static inline int FPS_unregister_notifier(struct notifier_block *nb,
 		unsigned long stype)
 {
 	int error;
