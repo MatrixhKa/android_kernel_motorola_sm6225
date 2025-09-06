@@ -75,6 +75,8 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 #else
 # define likely(x)	__builtin_expect(!!(x), 1)
 # define unlikely(x)	__builtin_expect(!!(x), 0)
+# define likely_notrace(x)	likely(x)
+# define unlikely_notrace(x)	unlikely(x)
 #endif
 
 /* Optimization barrier */
@@ -378,6 +380,10 @@ static inline void *offset_to_ptr(const int *off)
 
 #ifndef __optimize
 # define __optimize(level)
+#endif
+
+#ifndef __noreorder
+#define __noreorder
 #endif
 
 /* Compile time object size, -1 for unknown */

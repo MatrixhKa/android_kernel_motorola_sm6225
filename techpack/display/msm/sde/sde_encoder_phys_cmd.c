@@ -618,10 +618,9 @@ static int _sde_encoder_phys_cmd_poll_write_pointer_started(
 		return ret;
 
 	SDE_DEBUG_CMDENC(cmd_enc,
-			"pp:%d intf:%d rd_ptr %d wr_ptr %d\n",
+			"pp:%d intf:%d wr_ptr %d\n",
 			phys_enc->hw_pp->idx - PINGPONG_0,
 			phys_enc->hw_intf->idx - INTF_0,
-			info.rd_ptr_line_count,
 			info.wr_ptr_line_count);
 	SDE_EVT32_VERBOSE(DRMID(phys_enc->parent),
 			phys_enc->hw_pp->idx - PINGPONG_0,
@@ -1189,12 +1188,20 @@ static void sde_encoder_phys_cmd_enable(struct sde_encoder_phys *phys_enc)
 static bool sde_encoder_phys_cmd_is_autorefresh_enabled(
 		struct sde_encoder_phys *phys_enc)
 {
+	struct sde_encoder_phys_cmd *cmd_enc;
 	struct sde_hw_pingpong *hw_pp;
 	struct sde_hw_intf *hw_intf;
 	struct sde_hw_autorefresh cfg;
 	int ret;
 
-	if (!phys_enc || !phys_enc->hw_pp || !phys_enc->hw_intf)
+	if (!phys_enc)
+		return false;
+
+	cmd_enc = to_sde_encoder_phys_cmd(phys_enc);
+	if (!cmd_enc->autorefresh.cfg.enable)
+		return false;
+
+	if (!phys_enc->hw_pp || !phys_enc->hw_intf)
 		return false;
 
 	if (!sde_encoder_phys_cmd_is_master(phys_enc))

@@ -91,7 +91,6 @@ static ssize_t pools_show(struct device *dev, struct device_attribute *attr, cha
 	return size;
 }
 
-static DEVICE_ATTR_RO(pools);
 
 #ifdef DMAPOOL_DEBUG
 static void pool_check_block(struct dma_pool *pool, struct dma_block *block,
@@ -226,7 +225,10 @@ struct dma_pool *dma_pool_create(const char *name, struct device *dev,
 {
 	struct dma_pool *retval;
 	size_t allocation;
-	bool empty = false;
+	bool empty;
+
+	if (!dev)
+		return NULL;
 
 	if (!dev)
 		return NULL;
@@ -276,8 +278,7 @@ struct dma_pool *dma_pool_create(const char *name, struct device *dev,
 	 */
 	mutex_lock(&pools_reg_lock);
 	mutex_lock(&pools_lock);
-	if (list_empty(&dev->dma_pools))
-		empty = true;
+	empty = list_empty(&dev->dma_pools);
 	list_add(&retval->pools, &dev->dma_pools);
 	mutex_unlock(&pools_lock);
 	if (empty) {
@@ -361,7 +362,7 @@ static struct dma_page *pool_alloc_page(struct dma_pool *pool, gfp_t mem_flags)
 void dma_pool_destroy(struct dma_pool *pool)
 {
 	struct dma_page *page, *tmp;
-	bool empty = false, busy = false;
+	bool empty, busy = false;
 
 	if (unlikely(!pool))
 		return;
@@ -369,8 +370,7 @@ void dma_pool_destroy(struct dma_pool *pool)
 	mutex_lock(&pools_reg_lock);
 	mutex_lock(&pools_lock);
 	list_del(&pool->pools);
-	if (list_empty(&pool->dev->dma_pools))
-		empty = true;
+	empty = list_empty(&pool->dev->dma_pools);
 	mutex_unlock(&pools_lock);
 	if (empty)
 		device_remove_file(pool->dev, &dev_attr_pools);

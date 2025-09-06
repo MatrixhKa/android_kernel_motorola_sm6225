@@ -95,7 +95,13 @@ static int lz4hc_compress_crypto(struct crypto_tfm *tfm, const u8 *src,
 static int __lz4hc_decompress_crypto(const u8 *src, unsigned int slen,
 				     u8 *dst, unsigned int *dlen, void *ctx)
 {
-	int out_len = LZ4_decompress_safe(src, dst, slen, *dlen);
+	int out_len;
+
+#if defined(CONFIG_ARM64) && defined(CONFIG_KERNEL_MODE_NEON)
+	out_len = LZ4_arm64_decompress_safe(src, dst, slen, *dlen, false);
+#else
+	out_len = LZ4_decompress_safe(src, dst, slen, *dlen);
+#endif
 
 	if (out_len < 0)
 		return -EINVAL;
@@ -123,7 +129,6 @@ static struct crypto_alg alg_lz4hc = {
 	.cra_flags		= CRYPTO_ALG_TYPE_COMPRESS,
 	.cra_ctxsize		= sizeof(struct lz4hc_ctx),
 	.cra_module		= THIS_MODULE,
-	.cra_list		= LIST_HEAD_INIT(alg_lz4hc.cra_list),
 	.cra_init		= lz4hc_init,
 	.cra_exit		= lz4hc_exit,
 	.cra_u			= { .compress = {
