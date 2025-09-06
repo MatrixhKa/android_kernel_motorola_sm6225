@@ -91,6 +91,7 @@ static ssize_t pools_show(struct device *dev, struct device_attribute *attr, cha
 	return size;
 }
 
+static DEVICE_ATTR_RO(pools);
 
 #ifdef DMAPOOL_DEBUG
 static void pool_check_block(struct dma_pool *pool, struct dma_block *block,
@@ -226,9 +227,6 @@ struct dma_pool *dma_pool_create(const char *name, struct device *dev,
 	struct dma_pool *retval;
 	size_t allocation;
 	bool empty = false;
-
-	if (!dev)
-		return NULL;
 
 	if (!dev)
 		return NULL;
