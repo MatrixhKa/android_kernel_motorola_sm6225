@@ -3083,7 +3083,18 @@ static struct platform_driver mmi_charger_driver = {
 	.remove		= mmi_charger_remove,
 	.shutdown	= mmi_charger_shutdown,
 };
-module_platform_driver(mmi_charger_driver);
+
+static int __init mmi_init(void)
+{
+	return platform_driver_register(&mmi_charger_driver);
+}
+late_initcall(mmi_init);
+
+static void __exit mmi_exit(void)
+{
+	return platform_driver_unregister(&mmi_charger_driver);
+}
+module_exit(mmi_exit);
 
 MODULE_DESCRIPTION("MMI Charger Driver");
 MODULE_LICENSE("GPL v2");
