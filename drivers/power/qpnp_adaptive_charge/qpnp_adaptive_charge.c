@@ -463,7 +463,7 @@ static void qpnp_adap_chg_exit(void)
 	suspend_charging(false);
 }
 
-module_init(qpnp_adap_chg_init);
+late_initcall(qpnp_adap_chg_init);
 module_exit(qpnp_adap_chg_exit);
 
 MODULE_DESCRIPTION("Motorola QPNP adaptive charging");
