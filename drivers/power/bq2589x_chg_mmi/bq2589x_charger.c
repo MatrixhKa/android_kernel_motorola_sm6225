@@ -96,7 +96,7 @@ struct indicator_led_chip {
 static struct bq2589x *g_bq;
 static DEFINE_MUTEX(bq2589x_i2c_lock);
 #ifdef CONFIG_MMI_QC3P_TURBO_CHARGER
-bool qc3p_update_policy(struct bq2589x *chip);
+static bool qc3p_update_policy(struct bq2589x *chip);
 #endif
 #define MMI_HVDCP2_VOLTAGE_STANDARD		8000000
 #define MMI_HVDCP3_VOLTAGE_STANDARD		7500000
