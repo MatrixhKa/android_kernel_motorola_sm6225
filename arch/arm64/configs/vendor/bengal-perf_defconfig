@@ -29,7 +29,7 @@ CONFIG_CGROUP_CPUACCT=y
 CONFIG_CGROUP_BPF=y
 # CONFIG_SCHED_CORE_CTL is not set
 CONFIG_NAMESPACES=y
-# CONFIG_PID_NS is not set
+CONFIG_PID_NS=y
 CONFIG_SCHED_TUNE=y
 CONFIG_BLK_DEV_INITRD=y
 # CONFIG_RD_BZIP2 is not set
@@ -668,3 +668,27 @@ CONFIG_CC_WERROR=y
 # CONFIG_SLUB_DEBUG is not set
 CONFIG_ARCH_MMAP_RND_BITS=20
 CONFIG_SECURITY_DMESG_RESTRICT=y
+
+# Minimal Droidspaces Support
+# Copyright (C) 2026 ravindu644 <droidcasts@protonmail.com>
+
+# IPC mechanisms (required for tools that rely on shared memory and IPC namespaces)
+CONFIG_SYSCTL=y
+CONFIG_SYSVIPC=y
+CONFIG_POSIX_MQUEUE=y
+
+# Core namespace support (essential for isolation and running init systems)
+CONFIG_UTS_NS=y
+CONFIG_IPC_NS=y
+CONFIG_MNT_NS=y
+CONFIG_CGROUP_NS=y  # Required for Cgroup isolation (v4.1.0+)
+
+# Control groups support (required for systemd and resource accounting)
+CONFIG_CGROUP_DEVICE=y
+CONFIG_CGROUP_PIDS=y
+
+# Device filesystem support (enables hardware access when --hw-access is enabled)
+CONFIG_DEVTMPFS=y
+
+# Firmware loading support (optional, used when --hw-access is enabled)
+CONFIG_FW_LOADER_COMPRESS=y
