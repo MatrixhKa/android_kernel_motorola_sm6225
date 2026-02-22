@@ -33,7 +33,7 @@
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,15,0)
 #define PROBE_CNT_MAX			15
 #else
-#define PROBE_CNT_MAX			7
+#define PROBE_CNT_MAX			30
 #endif
 /* 10ms * 100 = 1000ms = 1s */
 #define USB_TYPE_POLLING_INTERVAL	10
