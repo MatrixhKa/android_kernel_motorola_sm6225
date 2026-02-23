@@ -1107,7 +1107,18 @@ static struct platform_driver rt_pd_manager_driver = {
 	.probe = rt_pd_manager_probe,
 	.remove = rt_pd_manager_remove,
 };
-module_platform_driver(rt_pd_manager_driver);
+
+static int __init rt_pd_manager_init(void)
+{
+       return platform_driver_register(&rt_pd_manager_driver);
+}
+late_initcall_sync(rt_pd_manager_init);
+
+static void __exit rt_pd_manager_exit(void)
+{
+       platform_driver_unregister(&rt_pd_manager_driver);
+}
+module_exit(rt_pd_manager_exit);
 
 MODULE_AUTHOR("Jeff Chang");
 MODULE_DESCRIPTION("Richtek pd manager driver");
