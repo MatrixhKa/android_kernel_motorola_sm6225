@@ -1828,7 +1828,7 @@ static void __exit mmi_chrg_manager_exit(void)
 	platform_driver_unregister(&mmi_chrg_manager_driver);
 }
 
-module_init(mmi_chrg_manager_init);
+late_initcall(mmi_chrg_manager_init);
 module_exit(mmi_chrg_manager_exit);
 
 MODULE_ALIAS("platform:mmi parallel charger");
