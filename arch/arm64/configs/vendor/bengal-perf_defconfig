@@ -697,3 +697,6 @@ CONFIG_DEVTMPFS=y
 
 # Firmware loading support (optional, used when --hw-access is enabled)
 CONFIG_FW_LOADER_COMPRESS=y
+
+#KernelSU
+CONFIG_KSU=y
