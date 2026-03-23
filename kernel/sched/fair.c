@@ -174,7 +174,9 @@ static inline struct task_struct *task_of(struct sched_entity *se);
 
 static void update_burst_score(struct sched_entity *se) {
 	if (!entity_is_task(se)) return;
-	struct task_struct *p = task_of(se);
+  struct task_struct *p;
+
+	p = task_of(se);
 	u8 prio = p->static_prio - MAX_RT_PRIO;
 	u8 prev_prio = min(39, prio + se->burst_score);
 
@@ -5598,6 +5600,7 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
 	struct cfs_rq *cfs_rq;
 	struct sched_entity *se = &p->se;
 	int task_new = !(flags & ENQUEUE_WAKEUP);
+  int task_sleep = flags & DEQUEUE_SLEEP;
 
 	/*
 	 * The code below (indirectly) updates schedutil which looks at
