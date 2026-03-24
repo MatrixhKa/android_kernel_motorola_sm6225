@@ -1,3 +1,4 @@
+#include <linux/android_vendor.h>
 /* SPDX-License-Identifier: GPL-2.0 */
 
 #ifndef _LINUX_BINDER_INTERNAL_H
