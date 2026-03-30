@@ -178,7 +178,7 @@ static int syna_tcm_get_gesture_data(const unsigned char *report,
 			syna_pal_le2_to_uint(gesture_data->tap_y));
 		break;
 	default:
-		LOGW("Unknown gesture_id:%d\n", gesture_id);
+    pr_debug("Unknown gesture_id:%d\n", gesture_id);
 		break;
 	}
 
