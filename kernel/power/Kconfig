@@ -314,7 +314,6 @@ config ENERGY_MODEL
 
 	  If in doubt, say N.
 
-<<<<<<< HEAD
 config SUSPEND_DEBUG
 	bool "Enable snapshot of regulator and tlmm when suspend"
 	depends on SUSPEND
