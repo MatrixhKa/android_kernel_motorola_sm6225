@@ -478,9 +478,6 @@ SYSCALL_DEFINE2(stat64, const char __user *, filename,
 	if (!error)
 		error = cp_new_stat64(&stat, statbuf);
 
-#if defined(CONFIG_KSU) && !defined(CONFIG_KSU_KPROBES_KSUD) // for 32-bit
-	ksu_handle_fstat64_ret(&fd, &statbuf);
-#endif
 	return error;
 }
 
