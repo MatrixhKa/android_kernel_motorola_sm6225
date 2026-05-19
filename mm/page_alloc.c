@@ -332,8 +332,7 @@ int user_min_free_kbytes = -1;
  */
 int watermark_boost_factor __read_mostly;
 #else
-/* Moto huangzq2: Disable watermark boost as it's not working fine on kernel 4.19 */
-int watermark_boost_factor __read_mostly = 0;
+int watermark_boost_factor __read_mostly = 15000;
 #endif
 int watermark_scale_factor = 20;
 
@@ -4257,7 +4256,7 @@ static int
 __perform_reclaim(gfp_t gfp_mask, unsigned int order,
 					const struct alloc_context *ac)
 {
-	struct reclaim_state reclaim_state = {};
+	struct reclaim_state reclaim_state;
 	int progress;
 	unsigned int noreclaim_flag;
 	unsigned long pflags;
