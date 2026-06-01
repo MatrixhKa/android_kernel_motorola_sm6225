@@ -125,8 +125,6 @@ struct sgm7220_chip {
 	struct state_disorder_monitor monitor;
 };
 
-static struct i2c_client *w_client;
-
 static int sgm7220_read_device(void *client, u32 reg, int len, void *dst)
 {
 	struct i2c_client *i2c = (struct i2c_client *)client;
@@ -1064,7 +1062,6 @@ static int sgm7220_i2c_probe(struct i2c_client *client,
 	sema_init(&chip->io_lock, 1);
 	sema_init(&chip->suspend_lock, 1);
 	i2c_set_clientdata(client, chip);
-	w_client = chip->client;
 	INIT_DELAYED_WORK(&chip->first_check_typec_work, sgm7220_first_check_typec_work);
 	chip->irq_wake_lock =
 		wakeup_source_register(chip->dev, "sgm7220_irq_wakelock");
