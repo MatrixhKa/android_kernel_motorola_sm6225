@@ -140,7 +140,6 @@
 #include <linux/file.h>
 #include <linux/poll.h>
 #include <linux/psi.h>
-#include <linux/oom.h>
 #include "sched.h"
 
 #define CREATE_TRACE_POINTS
