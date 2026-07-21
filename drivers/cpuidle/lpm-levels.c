@@ -622,7 +622,7 @@ static int lpm_cpuidle_enter(struct cpuidle_device *dev,
 
 	success = psci_enter_sleep(cpu, idx, true);
 
-exit:
+exit: __attribute__((unused));
 	end_time = ktime_to_ns(ktime_get());
 	lpm_stats_cpu_exit(idx, end_time, success);
 
