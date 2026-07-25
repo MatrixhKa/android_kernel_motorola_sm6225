@@ -80,7 +80,7 @@ void cass_cpu_util(struct cass_cpu_cand *c, int this_cpu, bool sync)
 /* Returns true if @a is a better CPU than @b */
 static __always_inline
 bool cass_cpu_better(const struct cass_cpu_cand *a,
-		     const struct cass_cpu_cand *b,
+		     const struct cass_cpu_cand *b, unsigned long p_util,
 		     int this_cpu, int prev_cpu, int prev_llc_id, bool sync)
 {
 #define cass_cmp(a, b) ({ res = (a) - (b); })
@@ -285,7 +285,8 @@ static int cass_best_cpu(struct task_struct *p, int prev_cpu, bool sync, bool rt
 		 * cidx still needs to be changed to the other candidate slot.
 		 */
 		if (best == curr ||
-		    cass_cpu_better(curr, best, this_cpu, prev_cpu, prev_llc_id, sync)) {
+		    cass_cpu_better(curr, best, p_util, this_cpu, prev_cpu,
+				    prev_llc_id, sync)) {
 			best = curr;
 			cidx ^= 1;
 		}
