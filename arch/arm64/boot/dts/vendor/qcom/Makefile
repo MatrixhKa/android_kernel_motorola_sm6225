@@ -1,3 +1,18 @@
+# Only include Motorola DTBs
+ifeq ($(CONFIG_MMI_DEVICE_DTBS),y)
+ifneq ($(CONFIG_BUILD_ARM64_DT_OVERLAY),y)
+$(error Moto DT w/o overlay is undefined!!!)
+endif
+
+# Motorola Device Trees
+dtbo-$(CONFIG_RHODE_DTB) += \
+        khaje-rhode-evt-overlay.dtbo \
+        khaje-rhode-dvt-overlay.dtbo
+
+khaje-rhode-evt-overlay.dtbo-base := khaje-moto-base.dtb
+khaje-rhode-dvt-overlay.dtbo-base := khaje-moto-base.dtb
+
+else
 ifeq ($(CONFIG_BUILD_ARM64_DT_OVERLAY),y)
         dtbo-$(CONFIG_ARCH_KONA) += \
                 kona-cdp-overlay.dtbo \
@@ -510,6 +525,7 @@ dtb-$(CONFIG_ARCH_SDM429) += sdm429-mtp.dtb \
 	sda429-mtp.dtb \
 	sda429-cdp.dtb
 endif
+endif  # CONFIG_MMI_DEVICE_DTBS
 
 always		:= $(dtb-y)
 subdir-y	:= $(dts-dirs)
