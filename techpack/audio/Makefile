@@ -67,6 +67,11 @@ ifeq ($(CONFIG_ARCH_SDM660), y)
 LINUXINCLUDE    += \
                 -include $(srctree)/techpack/audio/config/sdm660autoconf.h
 endif
+ifeq ($(CONFIG_RHODE_DTB), y)
+LINUXINCLUDE    += \
+                -include $(srctree)/techpack/audio/config/rhodeautoconf.h
+endif
+
 obj-y += soc/
 obj-y += dsp/
 obj-y += ipc/
